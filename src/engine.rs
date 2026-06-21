@@ -1,7 +1,8 @@
+use crate::search::search;
 use cozy_chess::{Board, Move};
 
 pub struct Engine {
-    pub board: Board,
+    board: Board,
 }
 
 impl Engine {
@@ -16,16 +17,6 @@ impl Engine {
     }
 
     pub fn best_move(&mut self) -> Option<(&Board, Move)> {
-        let mut found_move = None;
-
-        self.board.generate_moves(|moves| {
-            for mv in moves {
-                found_move = Some(mv);
-                return true;
-            }
-            true
-        });
-
-        Some((&self.board, found_move?))
+        search(&self.board).map(|m| (&self.board, m))
     }
 }

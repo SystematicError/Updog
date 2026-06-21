@@ -1,9 +1,12 @@
+use crate::engine::Engine;
 use cozy_chess::Board;
 use cozy_chess::util::{display_uci_move, parse_uci_move};
 use std::io::{BufRead, stdin};
 use std::process::exit;
 
 mod engine;
+mod evaluate;
+mod search;
 
 enum UciCommand {
     Uci,
@@ -90,7 +93,7 @@ impl UciCommand {
 }
 
 fn main() {
-    let mut engine = engine::Engine::new();
+    let mut engine = Engine::new();
 
     for line in stdin().lock().lines() {
         if let Some(command) = UciCommand::parse(&line.unwrap()) {
@@ -105,7 +108,7 @@ fn main() {
                     println!("readyok");
                 }
 
-                UciCommand::SetOption(name, value) => {}
+                UciCommand::SetOption(_name, _value) => {}
 
                 UciCommand::Position(board) => engine.set_board(board),
 
