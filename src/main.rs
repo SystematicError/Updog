@@ -4,6 +4,7 @@ use cozy_chess::util::{display_uci_move, parse_uci_move};
 use std::io::{BufRead, stdin};
 use std::process::exit;
 
+mod captures;
 mod engine;
 mod evaluate;
 mod ordering;
