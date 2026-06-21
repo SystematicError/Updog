@@ -3,12 +3,12 @@ use cozy_chess::{Board, Color, Piece};
 #[inline(always)]
 pub fn piece_value(piece: Piece) -> i32 {
     match piece {
+        Piece::King => 10000,
         Piece::Queen => 900,
         Piece::Rook => 500,
+        Piece::Bishop => 310,
         Piece::Knight => 300,
-        Piece::Bishop => 300,
         Piece::Pawn => 100,
-        Piece::King => 0,
     }
 }
 
@@ -18,8 +18,8 @@ pub fn evaluate(board: &Board) -> i32 {
     for piece in [
         Piece::Queen,
         Piece::Rook,
-        Piece::Knight,
         Piece::Bishop,
+        Piece::Knight,
         Piece::Pawn,
     ] {
         let value = piece_value(piece);

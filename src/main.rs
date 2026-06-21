@@ -6,6 +6,7 @@ use std::process::exit;
 
 mod engine;
 mod evaluate;
+mod ordering;
 mod search;
 
 enum UciCommand {
