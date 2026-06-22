@@ -117,6 +117,8 @@ fn main() {
                 UciCommand::Go => {
                     if let Some((board, mv)) = engine.best_move() {
                         println!("bestmove {}", display_uci_move(board, mv));
+                    } else {
+                        println!("bestmove (none)");
                     }
                 }
 
