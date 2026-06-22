@@ -12,7 +12,7 @@ fn mvv_lva_score(board: &Board, mv: Move) -> i32 {
     10 * piece_value(victim) - piece_value(attacker)
 }
 
-pub fn generate_ordered_moves(board: &Board) -> impl Iterator<Item = Move> {
+pub fn generate_ordered_moves(board: &Board) -> Vec<Move> {
     let mut ordered_moves = Vec::new();
 
     board.generate_moves(|moves| {
@@ -22,5 +22,5 @@ pub fn generate_ordered_moves(board: &Board) -> impl Iterator<Item = Move> {
 
     ordered_moves.sort_unstable_by_key(|&mv| std::cmp::Reverse(mvv_lva_score(board, mv)));
 
-    ordered_moves.into_iter()
+    ordered_moves
 }
