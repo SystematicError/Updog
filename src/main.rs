@@ -1,4 +1,5 @@
 use crate::engine::Engine;
+use crate::position::Position;
 use cozy_chess::Board;
 use cozy_chess::util::{display_uci_move, parse_uci_move};
 use std::io::{BufRead, stdin};
@@ -8,13 +9,14 @@ mod captures;
 mod engine;
 mod evaluate;
 mod ordering;
+mod position;
 mod search;
 
 enum UciCommand {
     Uci,
     IsReady,
     SetOption(String, Option<String>),
-    Position(Board),
+    Position(Position),
     Go,
     Quit,
 }
@@ -48,7 +50,7 @@ impl UciCommand {
             }
 
             "position" => {
-                let mut board = match tokens.next()? {
+                let mut position = Position::new(match tokens.next()? {
                     "startpos" => Board::default(),
 
                     "fen" => {
@@ -62,24 +64,26 @@ impl UciCommand {
                     }
 
                     _ => return None,
-                };
+                });
 
                 let moves_token = tokens.next();
 
                 if let None = moves_token {
-                    UciCommand::Position(board)
+                    UciCommand::Position(position)
                 } else if let Some("moves") = moves_token {
                     for mv in tokens {
-                        let mv = parse_uci_move(&board, mv);
+                        let mv = parse_uci_move(position.board(), mv);
 
                         if let Ok(mv) = mv {
-                            board.play(mv);
+                            if position.try_play(mv).is_err() {
+                                break;
+                            }
                         } else {
                             break;
                         }
                     }
 
-                    UciCommand::Position(board)
+                    UciCommand::Position(position)
                 } else {
                     return None;
                 }
@@ -112,7 +116,7 @@ fn main() {
 
                 UciCommand::SetOption(_name, _value) => {}
 
-                UciCommand::Position(board) => engine.set_board(board),
+                UciCommand::Position(position) => engine.set_position(position),
 
                 UciCommand::Go => {
                     if let Some((board, mv)) = engine.best_move() {

@@ -1,47 +1,47 @@
 use crate::captures::is_capture;
 use crate::evaluate::evaluate;
 use crate::ordering::generate_ordered_moves;
-use cozy_chess::{Board, Move};
+use crate::position::Position;
+use cozy_chess::{Board, GameStatus, Move};
 
 const MAX_SCORE: i32 = i32::MAX;
 const MIN_SCORE: i32 = -MAX_SCORE;
 const MATED_SCORE: i32 = MIN_SCORE + 1;
+const DRAWN_SCORE: i32 = 0;
 
-pub fn search(board: &Board) -> Option<Move> {
+pub fn search(position: &Position) -> Option<Move> {
     let mut best_move = None;
 
-    _search(board, MIN_SCORE, MAX_SCORE, true, &mut best_move, 5);
+    _search(position, MIN_SCORE, MAX_SCORE, true, &mut best_move, 3);
 
     best_move
 }
 
 fn _search(
-    board: &Board,
+    position: &Position,
     mut alpha: i32,
     beta: i32,
     root: bool,
     best_move: &mut Option<Move>,
     depth: u8,
 ) -> i32 {
-    let moves = generate_ordered_moves(board);
+    let moves = generate_ordered_moves(position.board());
 
-    if moves.is_empty() {
-        if board.checkers().len() == 0 {
-            return 0;
-        }
-
-        return MATED_SCORE;
+    match position.status() {
+        GameStatus::Drawn => return DRAWN_SCORE,
+        GameStatus::Won => return MATED_SCORE,
+        GameStatus::Ongoing => (),
     }
 
     if depth == 0 {
-        return evaluate(board);
+        return evaluate(position.board());
         // return quiescence(board, MIN_SCORE, MAX_SCORE);
     }
 
     let mut best_score = MIN_SCORE;
 
     for mv in moves {
-        let mut new_board = board.clone();
+        let mut new_board = position.clone();
         new_board.play_unchecked(mv);
 
         let score = -_search(&new_board, -beta, -alpha, false, best_move, depth - 1);

@@ -1,22 +1,23 @@
+use crate::position::Position;
 use crate::search::search;
 use cozy_chess::{Board, Move};
 
 pub struct Engine {
-    board: Board,
+    position: Position,
 }
 
 impl Engine {
     pub fn new() -> Self {
         Self {
-            board: Board::default(),
+            position: Position::default(),
         }
     }
 
-    pub fn set_board(&mut self, board: Board) {
-        self.board = board
+    pub fn set_position(&mut self, position: Position) {
+        self.position = position;
     }
 
     pub fn best_move(&mut self) -> Option<(&Board, Move)> {
-        search(&self.board).map(|m| (&self.board, m))
+        search(&self.position).map(|mv| (self.position.board(), mv))
     }
 }
